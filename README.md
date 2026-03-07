@@ -10,7 +10,7 @@ Here is a list of the current tools in this repository. Each tool has its own fo
 
 | Tool | Category | Description |
 | :--- | :--- | :--- |
-| [`/offset-calculator`](./Binary-Exploitation/offset-calculator) | Binary Exploitation | Automates finding the memory offset between two functions in an ELF binary to bypass PIE. |
+| [`/offset-calculator`](./Binary_Exploitation/offset-calculator) | Binary Exploitation | Automates finding the memory offset between two functions in an ELF binary to bypass PIE. |
 | *(More tools coming soon...)* | | |
 
 ## ⚠️ Disclaimer
