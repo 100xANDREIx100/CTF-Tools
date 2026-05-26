@@ -101,5 +101,4 @@ if [ ! -f "$init" ]; then
 fi
 
 unwrap "$init"
-
-echo "[*] Unwrapping sequence complete."
+ls
