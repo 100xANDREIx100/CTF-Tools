@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+VERBOSE=false
+
 unwrap(){
 
 	local file="$1"
@@ -11,8 +14,15 @@ unwrap(){
 	local file_type=$(file -b --mime-type "$file")
 
 	if [[ "$file_type" != application/* ]]; then
+		if [ "$VERBOSE" = true ]; then
+            echo "[+] Reached final file: $file ($file_type)"
+        fi
 		return
 	fi
+
+	if [ "$VERBOSE" = true ]; then
+        echo "[*] Branch: $file_type -> Extracting '$file'"
+    fi
 
 	local before
 	before=$(ls -A)
@@ -71,23 +81,38 @@ unwrap(){
 			return
 			;;
 	esac
+
 	local after
     after=$(ls -A)
 
-    for current in $after; do
-        if ! echo "$before" | grep -Fxq "$current"; then
-            
+	while IFS= read -r current; do
+        [ -z "$current" ] && continue
+        
+        if ! printf "%s\n" "$before" | grep -Fxq "$current"; then
             if [ -d "$current" ]; then
                 for inner in "$current"/*; do
-                    unwrap "$inner"
+                    [ -e "$inner" ] && unwrap "$inner"
                 done
             elif [ -f "$current" ]; then
                 unwrap "$current"
             fi
-            
         fi
-    done
+    done <<< "$after"
 }
+while getopts "v" opt; do
+    case ${opt} in
+        v ) 
+            VERBOSE=true 
+            ;;
+        \? ) 
+            echo "Usage: $0 [-v] <file>"
+            exit 1 
+            ;;
+    esac
+done
+
+shift $((OPTIND -1))
+
 init="$1"
 
 if [ -z "$init" ]; then
