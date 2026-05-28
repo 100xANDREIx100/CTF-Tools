@@ -1,6 +1,27 @@
 #!/usr/bin/env bash
 
 VERBOSE=false
+init=""
+
+show_help() {
+    echo "Usage: $(basename "$0") [OPTIONS] <file>"
+    echo ""
+	echo "A recursive dearchiver built for CTF challenges (also fit for casual use)."
+    echo "Relies on MIME types (not file extensions) to automatically"
+    echo "peel through deeply nested archives."
+    echo ""
+	echo "If an archive produces more archives, each will be taken separately"
+	echo "and decompressed  accordingly"
+	echo ""
+    echo "Options:"
+    echo "  -v,     Show the extraction branch taken for each layer"
+    echo "  -h,     Display this help message and exit"
+    echo ""
+    echo "Supported Formats:"
+    echo "  zip, tar, gzip, bzip2, 7z, xz, rar, zstd, lzma, cpio, deb, brotli, iso, cab"
+    echo ""
+    exit 0
+}
 
 unwrap(){
 
@@ -99,30 +120,37 @@ unwrap(){
         fi
     done <<< "$after"
 }
-while getopts "v" opt; do
-    case ${opt} in
-        v ) 
+
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        -v ) 
             VERBOSE=true 
+			shift
             ;;
-        \? ) 
-            echo "Usage: $0 [-v] <file>"
-            exit 1 
+		-h )
+			show_help
+			;;
+        -*) 
+            echo "[-] Unknown flag: $1"
+            echo "Try '$(basename "$0") -h' for more information."
+            exit 1
+            ;;
+        *) 
+            init="$1"
+            shift
             ;;
     esac
 done
 
-shift $((OPTIND -1))
-
-init="$1"
-
 if [ -z "$init" ]; then
-    echo "Usage: $0 <file>"
-    exit 1
+	echo "Usage: $(basename "$0") [-v] <file>"
+   	echo "Try '$(basename "$0") -h' for more information."
+   	exit 1
 fi
 
 if [ ! -f "$init" ]; then
-    echo "The file $init does not exist"
-    exit 1
+   	echo "[-] The file $init does not exist"
+   	exit 1
 fi
 
 unwrap "$init"
