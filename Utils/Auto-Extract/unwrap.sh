@@ -2,6 +2,7 @@
 
 VERBOSE=false
 init=""
+out_dir=""
 
 show_help() {
     echo "Usage: $(basename "$0") [OPTIONS] <file>"
@@ -15,6 +16,7 @@ show_help() {
 	echo ""
     echo "Options:"
     echo "  -v,     Show the extraction branch taken for each layer"
+	echo "  -o,     Specify an output directory to isolate extracted files"
     echo "  -h,     Display this help message and exit"
     echo ""
     echo "Supported Formats:"
@@ -123,12 +125,22 @@ unwrap(){
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
-        -v ) 
+        -v) 
             VERBOSE=true 
 			shift
             ;;
-		-h )
+		-h)
 			show_help
+			;;
+		-o)
+			if [ -n "$2" ] && [[ "$2" != -* ]]; then
+				out_dir="$2"
+				shift 2
+			else
+				echo "[-] Error: Argument for $1 is missing or invalid." >&2
+                echo "Try '$(basename "$0") -h' for more information."
+                exit 1
+			fi
 			;;
         -*) 
             echo "[-] Unknown flag: $1"
@@ -143,7 +155,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 if [ -z "$init" ]; then
-	echo "Usage: $(basename "$0") [-v] <file>"
+	echo "Usage: $(basename "$0") [-v] [-o <dir>] <file>"
    	echo "Try '$(basename "$0") -h' for more information."
    	exit 1
 fi
@@ -153,5 +165,19 @@ if [ ! -f "$init" ]; then
    	exit 1
 fi
 
+if [ -n "$out_dir" ]; then
+    abs_init=$(realpath "$init")
+
+    if [ "$VERBOSE" = true ]; then
+        echo "[*] Initializing workspace directory: $out_dir"
+    fi
+
+    mkdir -p "$out_dir"
+    cd "$out_dir" || exit 1
+    
+    cp "$abs_init" .
+    init=$(basename "$abs_init")
+fi
+
+
 unwrap "$init"
-ls
