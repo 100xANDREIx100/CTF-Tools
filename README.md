@@ -11,6 +11,7 @@ Here is a list of the current tools in this repository. Each tool has its own fo
 | Tool | Category | Description |
 | :--- | :--- | :--- |
 | [`/offset-calculator`](./Binary_Exploitation/offset-calculator) | Binary Exploitation | Automates finding the memory offset between two functions in an ELF binary to bypass PIE. |
+| [`/unwrap`](./Utils/unwrap) | Forensics / Misc | A recursive dearchiver that uses MIME types to automatically peel through deeply nested "Matryoshka" archives safely. |
 | *(More tools coming soon...)* | | |
 
 ## ⚠️ Disclaimer
